@@ -7,6 +7,13 @@
 
 import UIKit
 
+/**
+    This UI class's reponsibilities include -
+ - Pulls the already favorited image list.
+ - populates tableview with all the  favorited image.
+ - Allows user to un-favorite the image and remove from disk cache.
+*/
+
 class FavoritesViewController: BaseViewController {
     @IBOutlet weak var tableView: UITableView!
     

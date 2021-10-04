@@ -26,7 +26,6 @@
 		B92AC9CE27087665009F0E58 /* enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92AC9CD27087665009F0E58 /* enums.swift */; };
 		B92AC9D127087987009F0E58 /* DetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92AC9D027087987009F0E58 /* DetailsTableViewCell.swift */; };
 		B92AC9D327087D22009F0E58 /* MediaDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92AC9D227087D22009F0E58 /* MediaDetail.swift */; };
-		B92AC9D52708B055009F0E58 /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92AC9D42708B055009F0E58 /* CacheManager.swift */; };
 		B92AC9D72708B25C009F0E58 /* LocalCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92AC9D62708B25C009F0E58 /* LocalCacheManager.swift */; };
 		B92AC9D92708B270009F0E58 /* DiskCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92AC9D82708B270009F0E58 /* DiskCacheManager.swift */; };
 		B92AC9DB2708B28B009F0E58 /* MediaDetailManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92AC9DA2708B28B009F0E58 /* MediaDetailManager.swift */; };
@@ -80,7 +79,6 @@
 		B92AC9CD27087665009F0E58 /* enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = enums.swift; sourceTree = "<group>"; };
 		B92AC9D027087987009F0E58 /* DetailsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsTableViewCell.swift; sourceTree = "<group>"; };
 		B92AC9D227087D22009F0E58 /* MediaDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDetail.swift; sourceTree = "<group>"; };
-		B92AC9D42708B055009F0E58 /* CacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
 		B92AC9D62708B25C009F0E58 /* LocalCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalCacheManager.swift; sourceTree = "<group>"; };
 		B92AC9D82708B270009F0E58 /* DiskCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskCacheManager.swift; sourceTree = "<group>"; };
 		B92AC9DA2708B28B009F0E58 /* MediaDetailManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDetailManager.swift; sourceTree = "<group>"; };
@@ -171,7 +169,6 @@
 				B92AC9C927086A80009F0E58 /* BaseViewController.swift */,
 				B92AC9CB270875F2009F0E58 /* Helper.swift */,
 				B92AC9CD27087665009F0E58 /* enums.swift */,
-				B92AC9D42708B055009F0E58 /* CacheManager.swift */,
 				B92AC9D62708B25C009F0E58 /* LocalCacheManager.swift */,
 				B92AC9D82708B270009F0E58 /* DiskCacheManager.swift */,
 				B92AC9DA2708B28B009F0E58 /* MediaDetailManager.swift */,
@@ -394,7 +391,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B92AC9D52708B055009F0E58 /* CacheManager.swift in Sources */,
 				B92AC9DB2708B28B009F0E58 /* MediaDetailManager.swift in Sources */,
 				B92AC9C82708663D009F0E58 /* MainViewController.swift in Sources */,
 				B92AC9D92708B270009F0E58 /* DiskCacheManager.swift in Sources */,

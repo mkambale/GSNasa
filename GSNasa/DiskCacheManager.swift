@@ -8,6 +8,12 @@
 import Foundation
 import SwiftlyCache
 
+/**
+    This class's reponsibilities include -
+ - Instantiates Disk cache of goven size.
+ - Allows app to add/remove files from disk cache.
+ - Provides API to get all cached files
+*/
 class DiskCacheManager {
 
     let diskCache = DiskCache<Media>(path: NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true)[0] + "GSNasaDiskCache")

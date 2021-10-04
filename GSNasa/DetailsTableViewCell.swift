@@ -7,6 +7,10 @@
 
 import UIKit
 
+/**
+    This cell class is responsible for the displaying of favorited images.
+*/
+
 class DetailsTableViewCell: UITableViewCell {
 
     @IBOutlet weak var detailsImageView:UIImageView!
@@ -28,13 +32,17 @@ class DetailsTableViewCell: UITableViewCell {
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
-    
+
     @IBAction func heartButtonTapped(_ sender:Any) {
         if let action = unfavoriteAction, let mediaDetails = details {
             action(mediaDetails, index)
         }
     }
     
+    /**
+        This function populates the data
+    */
+
     func config(detail:Media) {
         self.details = detail
         if let mediaDetails = details, let imageData = mediaDetails.image.image,

@@ -7,6 +7,11 @@
 
 import UIKit
 
+/**
+    This UI class's reponsibilities include -
+ - Fetch the image for the day from API and populate the details.
+ - Allow user to set image as favorite and un-favorite
+*/
 class DisplayViewController: BaseViewController {
     
     @IBOutlet weak var stackView: UIStackView!

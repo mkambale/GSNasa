@@ -8,6 +8,12 @@
 import Foundation
 import SwiftlyCache
 
+/**
+    This class's reponsibilities include -
+ - Instantiates local cache of goven size.
+ - Allows app to add/remove files from local cache.
+ - Provides API to get all cached files
+*/
 class LocalCacheManager {
     let localCache = MemoryCache<Media>()
     

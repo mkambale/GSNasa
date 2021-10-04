@@ -7,6 +7,13 @@
 
 import UIKit
 
+
+/**
+    This UI class's reponsibilities include -
+ - Has embedded UIPageViewContrller to let the user see Todays Image, searc for image and see the already favorited images.
+ - Intantiates all three screens of PageView controller and manages the navigation between pages.
+*/
+
 class BasePageViewController: UIPageViewController {
 
     var individualPageViewControllerList = [UIViewController]()

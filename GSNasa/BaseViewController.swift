@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import MaterialComponents.MaterialProgressView
 
 class BaseViewController: UIViewController {
 

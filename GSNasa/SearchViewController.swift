@@ -7,6 +7,13 @@
 
 import UIKit
 
+/**
+    This UI class's reponsibilities include -
+ - Displaying calender to user for selection.
+ - Download image from API and save it local cache.
+ - Invoke DisplayViewController with downloaded data to show the image and details.
+*/
+
 class SearchViewController: BaseViewController {
     
     @IBOutlet weak var calenderView: UIDatePicker!
