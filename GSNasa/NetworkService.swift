@@ -50,7 +50,7 @@ final class NetworkService {
             .validate(statusCode: 200 ... 299)
             .responseDecodable {
                 (response: AFDataResponse<MediaDetail>) in  //This needs to be made generic
-
+                
                 //cleanup
                 if let data = response.data {
                     print("response in executeRequestForGenerics before parsing :\(String(decoding: (data), as: UTF8.self))")
@@ -71,40 +71,6 @@ final class NetworkService {
             }
     }
     
-    func executeDownloadRequest(urlRequest:URLRequest, fileName: String, completionHandler:@escaping(String?, ServerError?, RESULT)->()) {
-        
-        let destinationPath: DownloadRequest.Destination = { _, _ in
-            let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0];
-            let fileURL = documentsURL.appendingPathComponent("\(fileName)")
-            return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
-        }
-        
-        //almofireSession.download(urlRequest, to: destinationPath)
-        almofireSession.download(urlRequest)
-            .downloadProgress { progress in }
-            .validate(statusCode: 200 ... 299)
-            .responseData { response in
-                print("response: \(response)")
-                switch response.result {
-                case .success:
-                    if response.fileURL != nil, let filePath = response.fileURL?.absoluteString {
-                        print("executeDownlodRequest: filePath: \(filePath)")
-                        completionHandler(filePath, nil, .SUCCESS)
-                    }
-                    break
-                case .failure(let error):
-                    var sError = ServerError(serverError: error)
-                    if let underlyingError = error.underlyingError,
-                       let urlError = underlyingError as? URLError {
-                        sError = ServerError(afError: urlError)
-                    }
-                    completionHandler(nil, sError, .FAILED)
-                    break
-                }
-                
-            }
-    }
-    
     func downloadFile(urlString:String, completionHandler:@escaping(Data?, ServerError?, RESULT)->()) {
         almofireSession.request(urlString).responseData(completionHandler: {
             
@@ -113,7 +79,7 @@ final class NetworkService {
             switch response.result {
             case .success(let result):
                 completionHandler(result, nil, .SUCCESS)
-            case .failure(let error):
+            case .failure(_):
                 //TODO error handling
                 completionHandler(nil, ServerError(errorCode: DEFAULT_ERROR_CODE), .FAILED)
             }

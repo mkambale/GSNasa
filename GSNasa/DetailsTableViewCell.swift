@@ -47,7 +47,7 @@ class DetailsTableViewCell: UITableViewCell {
         self.details = detail
         if let mediaDetails = details, let imageData = mediaDetails.image.image,
            let image = UIImage(data:imageData, scale:1.0) {
-            detailsImageView.image = Helper.getThumbnail(image: image)
+            detailsImageView.image = image//Helper.getThumbnail(image: image)
             titleLabel.text = mediaDetails.details.title
             dateLabel.text = mediaDetails.details.date
             mediaTypeImageView.isHidden = true

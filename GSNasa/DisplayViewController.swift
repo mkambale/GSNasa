@@ -12,7 +12,7 @@ import UIKit
  - Fetch the image for the day from API and populate the details.
  - Allow user to set image as favorite and un-favorite
 */
-class DisplayViewController: BaseViewController {
+class DisplayViewController: BaseViewController, UIScrollViewDelegate {
     
     @IBOutlet weak var stackView: UIStackView!
     
@@ -30,13 +30,22 @@ class DisplayViewController: BaseViewController {
     
     @IBOutlet weak var mediaImageView: UIImageView!
     
+    private var forDate:Date?
     var mediaInfo:Media?
     
     static func getInstance(_ type:PageType, parent:UIViewController?) -> DisplayViewController {
-      let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "DisplayViewController") as! DisplayViewController
+        let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "DisplayViewController") as! DisplayViewController
         vc.pageType = type
         vc.parentVC = parent
-      return vc
+        return vc
+    }
+    
+    static func getInstance(_ type:PageType, parent:UIViewController?, forDate:Date) -> DisplayViewController {
+        let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "DisplayViewController") as! DisplayViewController
+        vc.pageType = type
+        vc.parentVC = parent
+        vc.forDate = forDate
+        return vc
     }
     
     override func viewDidLoad() {
@@ -44,9 +53,14 @@ class DisplayViewController: BaseViewController {
         setup()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        detailsScrollView.delegate = self
     }
     
     override func viewDidLayoutSubviews() {
@@ -54,23 +68,33 @@ class DisplayViewController: BaseViewController {
     }
     
     func setup() {
+        guard let date = forDate else {
+            return
+        }
+        
         heartButton.onImage = UIImage(named: "heart_filled")
         heartButton.offImage = UIImage(named: "heart_empty")
         
-        //get image for today
-        let todaysDate = Helper.convertToStringFromDate(date: Date(), outputFormat: .usStandardForm)
+        let forDateString = Helper.convertToStringFromDate(date: date, outputFormat: .usStandardForm)
         
         showActivityIndicator()
         
-        MediaDetailManager.shared.getMediaForDate(date: todaysDate) {
+        MediaDetailManager.shared.getMediaForDate(date: forDateString) {
             mediaInfo, data, result in
             
             if result == .SUCCESS, let media = mediaInfo, let imageData = data {
                 self.mediaInfo = Media(details: media, fileData: imageData)
                 self.configureView()
+            } else if result == .MEDIA_ISSUE {
+                let closeAction = UIAlertAction(title: "OK", style: .default, handler: {_ in
+                    self.closeIfNeeded()
+                })
+                Helper.showAlert(withtitle: "Not Supported", andMessage: "For selected date, there is video exists not image.", onView: self, okaction: closeAction)
             } else {
-                //show default error for now
-                Helper.showError(forView:self)
+                let closeAction = UIAlertAction(title: "OK", style: .default, handler: {_ in
+                    self.closeIfNeeded()
+                })
+                Helper.showAlert(withtitle: "Not Supported", andMessage: serverErrorMessage, onView: self, okaction: closeAction)
             }
             
             self.hideActivityIndicator()
@@ -86,18 +110,37 @@ class DisplayViewController: BaseViewController {
     }
     
     @IBAction func heartButtonTapped(_ sender: Any) {
-        guard let info = mediaInfo else {
+        if mediaInfo == nil {
             return
         }
-
+        
         if !heartButton.status { //save to disk
-            let result = MediaDetailManager.shared.saveToFavorites(media: info)
+            mediaInfo?.isFavorite = true
+
+            let result = MediaDetailManager.shared.saveToFavorites(media: mediaInfo!)
             
             if !result {
                 Helper.showError(forView: self)
             }
         } else { //remove from disk
-            MediaDetailManager.shared.removeFromFavorites(media: info)
+            
+            let deleteAction = UIAlertAction(title: "Yes", style: .destructive, handler: {
+                action in
+                DispatchQueue.main.async {
+                    self.mediaInfo?.isFavorite = false
+                    MediaDetailManager.shared.removeFromFavorites(media: self.mediaInfo!)
+                }
+            })
+            
+            let noAction = UIAlertAction(title: "No", style: .default, handler: {
+                action in
+                
+                //reset
+                self.heartButton.toggle()
+            })
+            
+            Helper.showAlert(withtitle: "Unfavorite", andMessage: "Do you want to unfavorite this?", onView: self, okaction: deleteAction, otheraction: noAction)
+            
         }
     }
     
@@ -113,9 +156,32 @@ class DisplayViewController: BaseViewController {
         copyRightLabel.text = info.details.copyright ?? ""
         dateLabel.text = info.details.date
         descriptionLabel.text = info.details.explanation
-        
+       
         if info.isFavorite {
             heartButton.setStatus(true)
+        } else {
+            heartButton.setStatus(false)
+        }
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView.contentOffset.x != 0 {
+            scrollView.contentOffset.x = 0
+        }
+    }
+    
+    func closeIfNeeded() {
+        if self.presentingViewController?.presentedViewController == self {
+            self.dismiss(animated: true, completion: nil)
+        }
+    }
+}
+
+extension DisplayViewController: FavoritesChangeStateProtocol {
+    func didChangeFavState(state: Bool) {
+        if !state {
+            mediaInfo?.isFavorite = false
+            MediaDetailManager.shared.removeFromFavorites(media: self.mediaInfo!)
         }
     }
     

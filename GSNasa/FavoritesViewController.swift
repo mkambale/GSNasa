@@ -6,6 +6,11 @@
 //
 
 import UIKit
+import AudioToolbox
+
+protocol FavoritesChangeStateProtocol: AnyObject {
+    func didChangeFavState(state:Bool)
+}
 
 /**
     This UI class's reponsibilities include -
@@ -16,6 +21,7 @@ import UIKit
 
 class FavoritesViewController: BaseViewController {
     @IBOutlet weak var tableView: UITableView!
+    weak var delegate:FavoritesChangeStateProtocol?
     
     private var favorites = [Media]()
     
@@ -27,22 +33,19 @@ class FavoritesViewController: BaseViewController {
     }
 
     override func viewDidLoad() {
-      super.viewDidLoad()
-    }
-    
-    func setup() {
-        favorites = MediaDetailManager.shared.getAllMedia()
-        if favorites.count > 0 {
-            tableView.reloadData()
-        }
+      super.viewDidLoad()        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         setup()
     }
-      
+    
+    func setup() {
+        favorites = MediaDetailManager.shared.getAllMedia()
+        tableView.reloadData()
+    }
+          
     func unfavoriteThis(_ media:Media,_ row:Int) {
         
         let deleteAction = UIAlertAction(title: "Yes", style: .destructive, handler: {
@@ -53,6 +56,10 @@ class FavoritesViewController: BaseViewController {
                     MediaDetailManager.shared.removeFromFavorites(media: media)
                     self.tableView.deleteRows(at: [IndexPath(row: row, section: 0)], with: .fade)
                     self.tableView.reloadData()
+                    
+                    if let del = self.delegate {
+                        del.didChangeFavState(state: false)
+                    }
                 }
             }
         })
@@ -74,6 +81,8 @@ extension FavoritesViewController: UITableViewDelegate, UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "DetailsTableViewCell") as! DetailsTableViewCell
         cell.config(detail: favorites[indexPath.row])
         cell.unfavoriteAction = unfavoriteThis
+        
+        print("\(indexPath.row) - " + Helper.convertToStringFromDate(date: Date(), outputFormat: .usStandardWithTimeForm2))
         return cell
     }
     

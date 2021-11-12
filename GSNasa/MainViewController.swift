@@ -7,12 +7,10 @@
 
 import UIKit
 
-/**
-    This UI class's reponsibilities include -
- - Base class for all visiable UI
- - Has content view to have emebedded UIPageView cotroller
-*/
-
+/// #MainViewController
+/// This UI class's reponsibilities include -
+/// Base class for all visiable UI
+/// Has content view to have emebedded UIPageView cotroller
 class MainViewController: BaseViewController {
 
     @IBOutlet weak var containerView: UIView!

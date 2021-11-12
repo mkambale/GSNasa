@@ -54,21 +54,7 @@ class SearchViewController: BaseViewController {
     
     @IBAction func SearchTapped(_ sender: Any) {
         print("searching for  \(calenderView.date)")
-        let selectedDate = Helper.convertToStringFromDate(date: calenderView.date, outputFormat: .usStandardForm)
-
-        MediaDetailManager.shared.getMediaForDate(date: selectedDate) {
-            mediaInfo, data, result in
-            
-            if result == .SUCCESS, let media = mediaInfo, let imageData = data {
-                let mediaInfo = Media(details: media, fileData: imageData)
-                self.showDisplayView(media: mediaInfo)
-            } else {
-                //show default error for now
-                Helper.showError(forView:self)
-            }
-            
-            self.hideActivityIndicator()
-        }
+        self.showDisplayView(forDate: calenderView.date)
     }
     
 }

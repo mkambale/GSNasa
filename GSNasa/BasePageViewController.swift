@@ -26,11 +26,12 @@ class BasePageViewController: UIPageViewController {
         dataSource = self
     }
     
-    func setUpPageViews() {
+    private func setUpPageViews() {
         
-        let displayViewController = DisplayViewController.getInstance(.TODAYS, parent: self)
+        let displayViewController = DisplayViewController.getInstance(.TODAYS, parent: self, forDate: Date())
         let searchViewController = SearchViewController.getInstance(.SEARCH, parent: self)
         let favoritesViewController = FavoritesViewController.getInstance(.FAVORITES, parent: self)
+        favoritesViewController.delegate = displayViewController
 
         individualPageViewControllerList = [
             displayViewController,
@@ -43,13 +44,17 @@ class BasePageViewController: UIPageViewController {
         currentPage = .TODAYS
     }
     
+    /**
+        This method reponsibilities include -
+        - Invoked when segment view is tapped.
+        - Responsible for switching page according to the segment selection
+    */
     func changePageTo(page: PageType) {
         
         if page.rawValue == currentPage.rawValue || page == .NONE {
             return
         }
  
-        //move back
         let nextVC = individualPageViewControllerList[page.rawValue]
         
         if page.rawValue < currentPage.rawValue {

@@ -25,7 +25,7 @@ extension UIView {
         }, completion: completion)
     }
 }
-public class LoadingOverlay{
+public class LoadingOverlay {
     
     var overlayView: UIView = UIView()
     var activityIndicator: UIActivityIndicatorView = UIActivityIndicatorView()

@@ -16,7 +16,7 @@ struct MediaDetail: Codable {
     var copyright: String?
     var date: String
     var explanation: String
-    var hdurl: String
+    var hdurl: String?
     var media_type: String
     var service_version: String
     var title: String
@@ -55,7 +55,11 @@ struct Media: Codable {
     
     init(details:MediaDetail, fileData:Data) {
         self.details = details
-        self.image = Image(fileData: fileData, name: details.hdurl)
+        if let url = details.hdurl {
+            self.image = Image(fileData: fileData, name: url)
+        } else {
+            self.image = Image(fileData: fileData, name: details.url)
+        }
     }
     
     enum CodingKeys: String, CodingKey {

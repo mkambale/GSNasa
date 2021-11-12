@@ -17,13 +17,18 @@ class BaseViewController: UIViewController {
     }
     
     func showActivityIndicator() {
-        if let parent = parentVC {
-            LoadingOverlay.shared.showOverlay(view: parent.view, message: "Loading...")
-        }
+        LoadingOverlay.shared.showOverlay(view: self.view, message: "Loading...")
     }
     
     func hideActivityIndicator() {
         LoadingOverlay.shared.fadeOutOverlay()
+    }
+    
+    func showDisplayView(forDate:Date) {
+        if let parent = parentVC {
+            let displayVC = DisplayViewController.getInstance(.NONE, parent: nil, forDate: forDate)
+            parent.present(displayVC, animated: true, completion: nil)
+        }
     }
     
     func showDisplayView(media:Media) {

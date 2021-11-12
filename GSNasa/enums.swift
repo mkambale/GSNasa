@@ -17,9 +17,11 @@ enum PageType: Int {
 enum DateFormat: String {
     case fullMonthForm = "MMMM dd, yyyy"
     case usStandardForm = "yyyy-MM-dd"
+    case usStandardWithTimeForm2 = "yyyy-MM-dd'T'HH:mm:ss"
 }
 
 enum RESULT : Int {
     case FAILED = 0
     case SUCCESS
+    case MEDIA_ISSUE
 }

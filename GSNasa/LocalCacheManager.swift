@@ -46,6 +46,7 @@ class LocalCacheManager {
     
     func getAllMediaFromLocal() -> [Media] {
         var list = [Media]()
+        
         for (_,object) in localCache {
             list.append(object)
         }

@@ -14,32 +14,51 @@ final class MediaDetailManager {
     private var localCacheManager = LocalCacheManager(size: CACHE_SIZE)
     private var diskCacheManager = DiskCacheManager(size: CACHE_SIZE)
     
+    var favoriteMedia = [Media]()
+    var isLoading = false
+    
     private init() {
-        
     }
     
     func getMediaForDate(date:String, completion:@escaping((MediaDetail?, Data?, RESULT) -> Void)) -> Void {
         //check in local cache
         if let resultModel = localCacheManager.getFromLocalCache(forDate: date) {
             completion(resultModel.details, resultModel.image.image, .SUCCESS)
-        }
-        
-        let request = createGetMediaRequest(date: date)
-        MediaDetailStore.shared.fetchMediaDetail(urlRequest: request) {
-            dataModel, error, result in
-            
-            if result == .SUCCESS, let response = dataModel {
-                //TODO - when considering video
-                if !response.hdurl.isEmpty && response.media == .IMAGE {
-
-                    MediaDetailStore.shared.executeDownloadRequest(url: response.hdurl, fileName: "image.png") {
-                        fileData, error, result in
-                        
-                        if result == .SUCCESS, let file = fileData {
-                            if self.localCacheManager.addToLocalCache(data: Media(details: response, fileData: file)) {
-                                completion(response, file, .SUCCESS)
-                            } else {
-                                completion(nil, nil, .FAILED)
+        } else if let resultModel = diskCacheManager.getFromDiskCache(forDate: date) {
+            completion(resultModel.details, resultModel.image.image, .SUCCESS)
+        } else {
+            let request = createGetMediaRequest(date: date)
+            MediaDetailStore.shared.fetchMediaDetail(urlRequest: request) {
+                dataModel, error, result in
+                
+                if result == .SUCCESS, let response = dataModel {
+                    //TODO - when considering video
+                    var url = ""
+                    if let hdurl = response.hdurl {
+                        url = hdurl
+                    } else {
+                        url = response.url
+                    }
+                    if response.media == .VIDEO {
+                        completion(nil, nil, .MEDIA_ISSUE)
+                    } else {
+                        if !url.isEmpty && response.media == .IMAGE {
+                            
+                            MediaDetailStore.shared.executeDownloadRequest(url: url, fileName: "image.png") {
+                                fileData, error, result in
+                                
+                                if result == .SUCCESS, let file = fileData {
+                                    
+                                    _ = self.diskCacheManager.addToDiskCache(data: Media(details: response, fileData: file))
+                                    if self.localCacheManager.addToLocalCache(data: Media(details: response, fileData: file)) {
+                                        completion(response, file, .SUCCESS)
+                                    } else {
+                                        completion(nil, nil, .FAILED)
+                                    }
+                                    
+                                } else {
+                                    completion(nil, nil, .FAILED)
+                                }
                             }
                         } else {
                             completion(nil, nil, .FAILED)
@@ -48,8 +67,6 @@ final class MediaDetailManager {
                 } else {
                     completion(nil, nil, .FAILED)
                 }
-            } else {
-                completion(nil, nil, .FAILED)
             }
         }
     }
@@ -57,6 +74,7 @@ final class MediaDetailManager {
     func getAllMedia() -> [Media] {
         //Get all from disk
         return localCacheManager.getAllMediaFromLocal()
+        //return favoriteMedia
     }
     
     func createGetMediaRequest(date:String) -> URLRequest {
@@ -76,24 +94,34 @@ final class MediaDetailManager {
     }
     
     func saveToFavorites(media: Media) -> Bool {
-        return diskCacheManager.addToDiskCache(data: media)
+        _ = localCacheManager.addToLocalCache(data: media)
+        _ = diskCacheManager.addToDiskCache(data: media)
+        return true
     }
     
     func removeFromFavorites(media: Media) {
         diskCacheManager.removeFromDiskCache(forDate: media.details.date)
         localCacheManager.removeFromLocalCache(forDate: media.details.date)
+        //favoriteMedia.append(media)
     }
     
-    func loadAllFavoritesToLocalCache() {
+    func loadAllFavoritesFromDisk(completion:@escaping (Bool)->Void) {
         let concurrentQueue = DispatchQueue(label: "GSNasa", attributes: .concurrent)
-        concurrentQueue.async {
+        concurrentQueue.async { [weak self] in
+            
+            guard let self = self else {
+                return
+            }
+            
             let mediaFromDisk = self.diskCacheManager.getAllMediaFromDisk()
             
             for item in mediaFromDisk {
                 let _ = self.localCacheManager.addToLocalCache(data: item)
             }
+            
+            self.favoriteMedia = mediaFromDisk
+            completion(true)
         }
-        //concurrentQueue.setTarget(queue: <#T##DispatchQueue?#>)
     }
 }
 
